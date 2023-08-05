@@ -1,0 +1,46 @@
+.table {
+  width: 100%;
+  &-header {
+    &__cell {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 10px;
+      color: rgba($color: $color-text, $alpha: 0.5);
+      font-weight: $font-weight-normal;
+      gap: 4px;
+    }
+  }
+
+  &__row {
+    &:nth-child(odd) {
+      background-color: $brand-dark-light;
+      td {
+        &:first-child {
+          border-radius: 11px 0 0 11px;
+        }
+        &:last-child {
+          border-radius: 0 11px 11px 0;
+        }
+      }
+    }
+  }
+
+  &-cell {
+    padding: 24px;
+    font-size: $font-size-medium;
+    text-align: center;
+
+    &-unfollow-button {
+      min-width: 170px;
+    }
+
+    &--positive {
+      color: #19c549;
+    }
+
+    &--negative {
+      color: #cd2525;
+    }
+  }
+}

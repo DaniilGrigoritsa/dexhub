@@ -1,0 +1,17 @@
+.text-input {
+  display: flex;
+  align-items: center;
+  padding: 12px 10px;
+  border: 1px solid #282a3d;
+  border-radius: 11px;
+  font-size: $font-size-xsmedium;
+  background-color: $brand-dark-light;
+
+  &::placeholder {
+    color: rgba($color: $color-text, $alpha: 0.7);
+  }
+
+  &--full-width {
+    width: 100%;
+  }
+}

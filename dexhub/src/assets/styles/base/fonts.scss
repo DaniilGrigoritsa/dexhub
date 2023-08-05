@@ -1,0 +1,6 @@
+@import '../mixins/fonts-mixin';
+
+@include font-face('InterText', 'Inter-Regular', normal, 400);
+@include font-face('InterText', 'Inter-Medium', normal, 500);
+@include font-face('InterText', 'Inter-SemiBold', normal, 600);
+@include font-face('InterText', 'Inter-ExtraBold', normal, 800);

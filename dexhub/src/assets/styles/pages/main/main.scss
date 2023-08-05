@@ -1,0 +1,59 @@
+.main-page {
+  &-actions {
+    display: grid;
+    width: 100%;
+    margin: 24px 0 48px;
+    grid-template-columns: 2fr 1fr;
+
+    &__sort {
+      display: flex;
+      justify-content: flex-end;
+      color: rgba($color: $color-text, $alpha: 0.5);
+      gap: 24px;
+    }
+  }
+
+  &-search {
+    display: flex;
+    position: relative;
+    align-items: center;
+    margin-right: 16px;
+    width: 100%;
+
+    input {
+      padding-right: 72px;
+    }
+
+    &__button {
+      position: absolute;
+      right: 12px;
+      height: 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: $font-size-xsmall;
+      cursor: pointer;
+      background-color: rgba($color: $brand-gray-medium, $alpha: 0.3);
+      padding-inline: 12px;
+    }
+  }
+
+  &__button {
+    min-width: 250px;
+  }
+
+  &-content {
+    display: flex;
+    flex-wrap: wrap;
+    overflow: auto;
+    gap: 24px 40px;
+  }
+
+  &__create-acc {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 32px 40px;
+    border-radius: 16px;
+    background-color: $brand-dark-light;
+  }
+}

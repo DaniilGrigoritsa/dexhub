@@ -1,0 +1,47 @@
+.brand-headline {
+  margin: 0;
+  color: $color-text;
+  font-weight: $font-weight-bold;
+  font-size: $font-size-xlarge;
+}
+
+.brand-subtitle {
+  color: $color-text;
+  font-weight: $font-weight-bold;
+  font-size: $font-size-large;
+  text-align: center;
+}
+
+.brand-description {
+  color: rgba($color: $color-text, $alpha: 0.7);
+  font-size: $font-size-xsmedium;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.brand-text-small {
+  color: rgba($color: $color-text, $alpha: 0.5);
+  font-size: $font-size-xsmall;
+
+  &--light {
+    color: $color-text;
+  }
+}
+
+.brand-primary-text {
+  color: $brand-primary;
+  font-size: $font-size-xsmedium;
+}
+
+.brand-price {
+  font-size: $font-size-large;
+  font-weight: $font-weight-bold;
+
+  &--positive {
+    color: #19c549;
+  }
+
+  &--negative {
+    color: #cd2525;
+  }
+}

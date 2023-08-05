@@ -1,0 +1,31 @@
+@mixin make-spacings($classname, $size) {
+  .#{classname} {
+    margin: $size;
+  }
+
+  .#{$classname}-ends {
+    margin-top: $size;
+    margin-bottom: $size;
+  }
+
+  .#{$classname}-sides {
+    margin-right: $size;
+    margin-left: $size;
+  }
+
+  .#{$classname}-top {
+    margin-top: $size;
+  }
+
+  .#{$classname}-right {
+    margin-right: $size;
+  }
+
+  .#{$classname}-bottom {
+    margin-bottom: $size;
+  }
+
+  .#{$classname}-left {
+    margin-left: $size;
+  }
+}

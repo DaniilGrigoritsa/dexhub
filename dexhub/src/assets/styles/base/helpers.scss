@@ -1,0 +1,12 @@
+@import '../mixins/mixin-spacings';
+
+@include make-spacings('push-xs', 4px);
+@include make-spacings('push-sm', 8px);
+@include make-spacings('push-ms', 12px);
+@include make-spacings('push', 16px);
+@include make-spacings('push-md', 24px);
+@include make-spacings('push-lg', 32px);
+@include make-spacings('push-xl', 40px);
+@include make-spacings('push-2xl', 48px);
+@include make-spacings('push-3xl', 64px);
+@include make-spacings('push-4xl', 80px);

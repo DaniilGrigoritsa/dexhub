@@ -1,0 +1,11 @@
+@function font_url($path) {
+  @return url('src/assets/fonts/#{$path}');
+}
+@mixin font-face($family, $filename, $style, $weight) {
+  @font-face {
+    font-family: $family;
+    src: font_url('#{$filename}.ttf') format('truetype');
+    font-weight: $weight;
+    font-style: $style;
+  }
+}

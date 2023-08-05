@@ -1,0 +1,13 @@
+.usds-field {
+  position: relative;
+  width: 100%;
+
+  svg {
+    position: absolute;
+    right: 12px;
+    top: 12px;
+  }
+  input {
+    padding-right: 36px;
+  }
+}

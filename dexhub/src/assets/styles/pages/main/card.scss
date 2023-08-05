@@ -1,0 +1,16 @@
+.trader-card {
+  display: flex;
+  flex-direction: column;
+  width: 300px;
+  padding: 24px;
+  border-radius: 24px;
+  background-color: $brand-dark-light;
+  gap: 16px;
+
+  &-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+  }
+}

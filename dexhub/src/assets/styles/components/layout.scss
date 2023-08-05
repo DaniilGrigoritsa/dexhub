@@ -1,0 +1,13 @@
+.layout {
+  display: flex;
+  flex-direction: row-reverse;
+  flex-wrap: nowrap;
+  min-height: 100dvh;
+
+  &-container {
+    width: 100%;
+    padding-inline: 48px;
+    background-color: #010101;
+    color: $color-text;
+  }
+}

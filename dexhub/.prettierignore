@@ -1,0 +1,7 @@
+*.png
+*.svg
+.eslintignore
+.gitignore
+docs
+node_modules
+package-lock.json
