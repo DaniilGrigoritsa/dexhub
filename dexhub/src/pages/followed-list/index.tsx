@@ -1,8 +1,7 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { ReactComponent as AskIcon } from '#src/assets/images/arrows-ask.svg';
 import { ReactComponent as DescIcon } from '#src/assets/images/arrows-desc.svg';
 import { Layout, Period, UnfollowModal } from '#src/components';
-import { TRADER_LIST } from '#src/config';
 import { getPnlValue } from '#src/lib';
 import type { Trader } from '#src/types';
 import {
@@ -14,10 +13,24 @@ import {
   type SortingState,
 } from '@tanstack/react-table';
 import classNames from 'classnames';
+import utils from '#src/scripts/utils';
+import { useAccount } from 'wagmi';
 
 export const FollowedList = () => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [selectedTrader, setSelectedTrader] = useState<Trader | null>(null);
+  const [traderList, setTraderList] = useState<Trader[]>([]);
+
+  const { address } = useAccount();
+
+  useEffect(() => {
+    const getList = async () => {
+      const list: string[] = await utils.getFollowedTraders(address);
+      const response: Trader[] = await utils.getFollowedTraderInfo(list, address);
+      setTraderList(response);
+    }
+    getList();
+  }, []);
 
   const getColumns: ColumnDef<Trader, string | number>[] = useMemo(
     () => [
@@ -49,7 +62,7 @@ export const FollowedList = () => {
         cell: (info) => (
           <div className="flex align-center direction-column">
             <span className="border-bottom">{info.getValue().toLocaleString('ru')}</span>
-            <span className="brand-text-small brand-text-small--light">8x</span>
+            <span className="brand-text-small brand-text-small--light">{info.row.original.leverage}x</span>
           </div>
         ),
       },
@@ -69,7 +82,9 @@ export const FollowedList = () => {
         cell: (info) => (
           <div className="table-cell-unfollow-button">
             <button
-              onClick={() => setSelectedTrader(info.row.original)}
+              onClick={() => {
+                setSelectedTrader(info.row.original);
+              }}
               className={classNames('btn', 'btn--full-width', 'btn--secondary-red')}
             >
               Unfollow
@@ -82,7 +97,7 @@ export const FollowedList = () => {
   );
 
   const table = useReactTable<Trader>({
-    data: TRADER_LIST,
+    data: traderList,
     columns: getColumns,
     state: {
       sorting,
@@ -131,7 +146,7 @@ export const FollowedList = () => {
           <tbody>
             {table
               .getRowModel()
-              .rows.slice(0, TRADER_LIST.length)
+              .rows.slice(0, traderList.length)
               .map((row) => {
                 return (
                   <tr key={row.id} className="table__row">

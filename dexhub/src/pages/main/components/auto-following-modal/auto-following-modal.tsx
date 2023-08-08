@@ -1,19 +1,21 @@
 import { useBoolean } from 'usehooks-ts';
 import { useState } from 'react';
-
+import { useAccount } from 'wagmi';
 import { ReactComponent as CheckIcon } from '#src/assets/images/outline-check.svg';
 import { ReactComponent as UsdsIcon } from '#src/assets/images/usdc.svg';
-import type { ModalProps } from '#src/components';
 import { FollowModal, Modal } from '#src/components';
-import { TRADER_LIST } from '#src/config';
 import { getPnlValue } from '#src/lib';
+import { PropsWithChildren } from "react";
+import { Trader } from '#src/types';
 
-// import utils from '#src/scripts/utils';
-// import main from '#src/scripts/main';
+import utils from '#src/scripts/utils';
+import main from '#src/scripts/main';
 
-type Props = ModalProps;
+type TraderProps = PropsWithChildren<{ show: boolean; onClose: () => void; trader: Trader}>;
 
-export const AutoFollowingModal = ({ show, onClose }: Props) => {
+export const AutoFollowingModal = ({ show, onClose, trader}: TraderProps) => {
+  const { address } = useAccount();
+
   const { value, setFalse, setTrue } = useBoolean(false);
 
   const [approveAmont, setApproveAmont] = useState<number>();
@@ -23,7 +25,8 @@ export const AutoFollowingModal = ({ show, onClose }: Props) => {
   };
 
   const handleStartFollowing = async () => {
-
+    if (approveAmont) if (approveAmont > 0) await main.approve(approveAmont, address);
+    utils.addTrader(trader.name, address);
   }
 
   return (
@@ -34,16 +37,16 @@ export const AutoFollowingModal = ({ show, onClose }: Props) => {
       </span>
       <div className="flex justify-space-between align-center">
         <div className="flex push-md-right">
-          <img className="push-sm-right" src={TRADER_LIST[0].avatar} alt="avatar" width={48} height={48} />
+          <img className="push-sm-right" src={trader.avatar} alt="avatar" width={48} height={48} />
           <div>
-            <span className="brand-text-small brand-text-small--light">{TRADER_LIST[0].name}</span>
+            <span className="brand-text-small brand-text-small--light">{trader.name}</span>
             <br />
-            <span className="brand-primary-text">{TRADER_LIST[0].lastName}</span>
+            <span className="brand-primary-text">{trader.lastName}</span>
           </div>
         </div>
         <div className="flex align-end direction-column">
           <span className="brand-text-small">PnL-$</span>
-          {getPnlValue(TRADER_LIST[0].pnl, 'brand-price')}
+          {getPnlValue(trader.pnl, 'brand-price')}
         </div>
       </div>
       <div className="usds-field">

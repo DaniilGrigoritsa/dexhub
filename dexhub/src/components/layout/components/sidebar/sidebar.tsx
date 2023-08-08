@@ -52,7 +52,7 @@ export const Sidebar = () => {
             className="btn btn--full-width btn--primary-red btn--small-padding"
             onClick={() => handleDisconnectWallet()}
           >
-              Log Out
+            Log Out
           </button>
           <div className="push-xs-bottom" />
           <button className="btn btn--full-width btn--small-padding color-text" onClick={setFalse}>

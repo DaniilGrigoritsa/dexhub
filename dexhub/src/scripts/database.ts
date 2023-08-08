@@ -37,6 +37,23 @@ const getUsersByTrader = async (trader: string, chain: string) => {
     }
 }
 
+const getTrackedTraders = async (user: string, chain: string): Promise<string[]> => {
+    const dbRef = ref(getDatabase());
+    const snapshot = await get(child(dbRef, `${chain}/traders/`));
+    const trackedTraders = [];
+    if (snapshot.exists()) {
+        const response = snapshot.val();
+        const traders = Object.keys(response).map((key) => {
+            return key;
+        })
+        for(let trader of traders) {
+            const users = response[trader]._users;
+            if (users.includes(user)) trackedTraders.push(trader);
+        }
+    }
+    return trackedTraders;
+}
+
 const addTrackedTraders = async (user: string | undefined, traders: string[], chain: string) => {
     for(let trader of traders) {
         const users = await getUsersByTrader(trader, chain);
@@ -79,4 +96,4 @@ const deleteTrackedTraders = async (user: string | undefined, traders: string[],
     }
 }
 
-export default { addTrackedTraders, deleteTrackedTraders, getUsersByTrader, initDataBase }
+export default { addTrackedTraders, deleteTrackedTraders, getUsersByTrader, initDataBase, getTrackedTraders }

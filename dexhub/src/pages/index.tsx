@@ -4,11 +4,15 @@ import { ROUTES } from '#src/config';
 import { FollowedList as FollowedListPage } from './followed-list';
 import { Main as MainPage } from './main';
 import { StartFollowing as StartFollowingPage } from './start-following';
+import { PropsWithChildren } from 'react';
+import { Trader } from '#src/types';
 
-export const Routing = () => (
+type RouterProps = PropsWithChildren<{ trader: Trader | null; setTrader: (trader: Trader) => void }>;
+
+export const Routing = (props: RouterProps) => (
   <Routes>
-    <Route path={ROUTES.main.path} element={<MainPage />} />
-    <Route path={ROUTES.main.startFollowing.path} element={<StartFollowingPage />} />
+    <Route path={ROUTES.main.path} element={<MainPage trader={props.trader} setTrader={props.setTrader}/>} />
+    {!!props.trader && <Route path={ROUTES.main.startFollowing.path} element={<StartFollowingPage {...props.trader}/>} /> }
     <Route path={ROUTES.main.followedList.path} element={<FollowedListPage />} />
   </Routes>
 );

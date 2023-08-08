@@ -5,6 +5,9 @@ import { arbitrum, avalanche } from 'wagmi/chains';
 import { publicProvider } from 'wagmi/providers/public';
 import { withProviders } from './providers';
 
+import { Trader } from '#src/types';
+import { useState } from 'react';
+
 const Component = () => {
   const { chains, publicClient } = configureChains([arbitrum, avalanche], [publicProvider()]);
 
@@ -20,6 +23,8 @@ const Component = () => {
     publicClient,
   });
 
+  const [trader, setTrader] = useState<Trader | null>(null);
+
   return (
     <WagmiConfig config={wagmiConfig}>
       <RainbowKitProvider
@@ -29,7 +34,7 @@ const Component = () => {
         })}
         chains={chains}
       >
-        <Routing />
+        <Routing trader={trader} setTrader={setTrader}/>
       </RainbowKitProvider>
     </WagmiConfig>
   );

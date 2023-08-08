@@ -2,6 +2,7 @@ import { UnfollowModal } from '#src/components';
 import { ROUTES } from '#src/config';
 import { getPnlValue } from '#src/lib';
 import type { Trader } from '#src/types';
+import { PropsWithChildren } from "react";
 
 import classNames from 'classnames';
 import { Link, generatePath } from 'react-router-dom';
@@ -10,12 +11,12 @@ import { useAccount } from 'wagmi';
 
 import utils from '#src/scripts/utils';
 
-type Props = Trader;
+type CardProps = PropsWithChildren<{ trader: Trader; handleTraderChange: (trader: Trader) => void }>;
 
-export const Card = (props: Props) => {
+export const Card = (props: CardProps) => {
   const { value, setFalse, setTrue } = useBoolean(false);
   
-  const { avatar, name, lastName, pnl, win, loss, size, leverage, status } = props;
+  const { avatar, name, lastName, pnl, win, loss, size, leverage, status } = props.trader;
 
   const { address } = useAccount();
 
@@ -25,7 +26,7 @@ export const Card = (props: Props) => {
         <div className="flex">
           <img className="push-sm-right" src={avatar} alt="avatar" />
           <div>
-            <span className="brand-text-small brand-text-small--light">{name}</span>
+            <span className="brand-text-small brand-text-small--light">{lastName}</span>
             <br />
             <span className="brand-primary-text">{lastName}</span>
           </div>
@@ -53,6 +54,7 @@ export const Card = (props: Props) => {
         <Link
           to={generatePath(ROUTES.main.startFollowing.path, { id: name + lastName })}
           className={classNames('btn', 'btn--full-width', 'btn--secondary')}
+          onClick={() => props.handleTraderChange(props.trader) }
         >
           Follow
         </Link>
@@ -64,7 +66,7 @@ export const Card = (props: Props) => {
           Unfollow
         </button>
       )}
-      <UnfollowModal show={value} onClose={setFalse} {...props} />
+      <UnfollowModal show={value} onClose={setFalse} {...props.trader} />
     </div>
   );
 };

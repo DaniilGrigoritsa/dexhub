@@ -1,5 +1,4 @@
 import { Layout, Period, SortButton } from '#src/components';
-// import { TRADER_LIST } from '#src/config';
 import { useBoolean } from 'usehooks-ts';
 import { AutoFollowingModal, Card } from './components';
 import { useAccount } from 'wagmi';
@@ -9,24 +8,30 @@ import { zeroAddress } from "viem";
 import utils from "#src/scripts/utils";
 import database from "#src/scripts/database";
 import { Trader } from '#src/types';
+import { PropsWithChildren } from 'react';
 
-export const Main = () => {
+type MainProps = PropsWithChildren<{ trader: Trader | null; setTrader: (trader: Trader) => void }>;
+
+
+export const Main = (props: MainProps) => {
   const { value, setTrue, setFalse } = useBoolean(false);
 
   const { address } = useAccount();
 
-  const [showCreateAccButton, setShowCreateAccButton] = useState(true);
-  const [trader, setTrader] = useState<string>("");
+  const [showCreateAccButton, setShowCreateAccButton] = useState<boolean>(true);
+  const [traderAddress, setTraderAddress] = useState<string>("");
   const [traderList, setTraderList] = useState<Trader[]>([]);
+
+  const handleTraderChange = (_trader: Trader) => {
+    props.setTrader(_trader);
+  }
 
   useEffect(() => {
     const getList = async () => {
       const list: Trader[] = await utils.getTraderList(address);
-      console.log("list", list)
       if (list.length > 0) {
         setTraderList(list);
       }
-      console.log("LIST", traderList)
     }
     getList();
   }, []);
@@ -42,7 +47,7 @@ export const Main = () => {
   }, [])
 
   const handleInputChange = (event: any) => {
-    setTrader(event.target.value);
+    setTraderAddress(event.target.value);
   };
 
   return (
@@ -64,10 +69,10 @@ export const Main = () => {
       <div className="main-page-actions">
         <div className="flex">
           <div className="main-page-search">
-            <input type="text" value={trader} onChange={handleInputChange} className="text-input text-input--full-width" placeholder="Paste trader address" />
+            <input type="text" value={traderAddress} onChange={handleInputChange} className="text-input text-input--full-width" placeholder="Paste trader address" />
             <button className="main-page-search__button">Paste</button>
           </div>
-          <button onClick={() => { utils.addTrader(trader, address); setTrue }} className="btn btn--primary main-page__button" >
+          <button onClick={() => { utils.addTrader(traderAddress, address); setTrue }} className="btn btn--primary main-page__button" >
             Follow
           </button>
         </div>
@@ -79,10 +84,12 @@ export const Main = () => {
       </div>
       <div className="main-page-content">
         {traderList.map((obj, index) => (
-          <Card key={obj.name + index} {...obj} />
+          <div onClick={() => handleTraderChange(obj)}>
+            <Card key={obj.name + index} trader = {obj} handleTraderChange={handleTraderChange}/>
+          </div>
         ))}
       </div>
-      <AutoFollowingModal show={value} onClose={setFalse} />
+      {!!props.trader && <AutoFollowingModal show={value} onClose={setFalse} trader={props.trader}/>}
     </Layout>
   );
 };
