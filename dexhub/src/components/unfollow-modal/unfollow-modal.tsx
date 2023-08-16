@@ -25,7 +25,7 @@ export const UnfollowModal = ({ show, avatar, name, lastName, pnl, onClose}: Pro
         <div className="flex">
           <img className="push-sm-right" src={avatar} alt="avatar" />
           <div>
-            <span className="brand-text-small brand-text-small--light">{name}</span>
+            <span className="brand-text-small brand-text-small--light">{name.substring(0, 5)}</span>
             <br />
             <span className="brand-primary-text">{lastName}</span>
           </div>
@@ -38,9 +38,9 @@ export const UnfollowModal = ({ show, avatar, name, lastName, pnl, onClose}: Pro
       <div className="full-width">
         <button 
           className="btn btn--full-width btn--primary-red btn--small-padding"
-          onClick={ () => { handleUnfollow(name, address) }}
+          onClick={() => { onClose(); handleUnfollow(name, address) }}
         >
-            Unfollow
+          Unfollow
         </button>
         <div className="push-xs-bottom" />
         <button 

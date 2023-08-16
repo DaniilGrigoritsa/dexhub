@@ -1,6 +1,5 @@
 import { useBoolean } from 'usehooks-ts';
 import { useState } from 'react';
-import { useAccount } from 'wagmi';
 import { ReactComponent as CheckIcon } from '#src/assets/images/outline-check.svg';
 import { ReactComponent as UsdsIcon } from '#src/assets/images/usdc.svg';
 import { FollowModal, Modal } from '#src/components';
@@ -8,13 +7,9 @@ import { getPnlValue } from '#src/lib';
 import { PropsWithChildren } from "react";
 import { Trader } from '#src/types';
 
-import utils from '#src/scripts/utils';
-import main from '#src/scripts/main';
-
 type TraderProps = PropsWithChildren<{ show: boolean; onClose: () => void; trader: Trader}>;
 
 export const AutoFollowingModal = ({ show, onClose, trader}: TraderProps) => {
-  const { address } = useAccount();
 
   const { value, setFalse, setTrue } = useBoolean(false);
 
@@ -23,11 +18,6 @@ export const AutoFollowingModal = ({ show, onClose, trader}: TraderProps) => {
   const handleInputChange = (event: any) => {
     setApproveAmont(event.target.value);
   };
-
-  const handleStartFollowing = async () => {
-    if (approveAmont) if (approveAmont > 0) await main.approve(approveAmont, address);
-    utils.addTrader(trader.name, address);
-  }
 
   return (
     <Modal show={show} onClose={onClose} >
@@ -54,7 +44,7 @@ export const AutoFollowingModal = ({ show, onClose, trader}: TraderProps) => {
         <UsdsIcon width={24} height={24} />
       </div>
       <div className="full-width">
-        <button onClick={() => { handleStartFollowing(); setTrue }} className="btn btn--full-width btn--primary" >
+        <button onClick={setTrue} className="btn btn--full-width btn--primary" >
           Start following
         </button>
         <div className="push-xs-bottom" />

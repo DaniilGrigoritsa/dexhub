@@ -1,0 +1,18 @@
+.trader-history {
+  &-info {
+    display: flex;
+    gap: 16px;
+
+    button {
+      text-transform: capitalize;
+      width: 150px;
+    }
+  }
+  &-table {
+    table {
+      td {
+        padding: 10px 24px;
+      }
+    }
+  }
+}

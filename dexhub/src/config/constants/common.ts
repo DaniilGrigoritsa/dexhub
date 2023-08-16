@@ -4,8 +4,11 @@ export const ROUTES = {
     followedList: {
       path: '/followed-list',
     },
-    startFollowing: {
+    traderHistory: {
       path: '/:id',
+    },
+    startFollowing: {
+      path: 'start-following/:id',
     },
   },
 } as const;

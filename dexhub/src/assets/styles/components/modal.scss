@@ -2,8 +2,8 @@
   z-index: 1000;
   position: fixed;
   overflow-y: auto;
-  inset: 0;
   background-color: rgba($color: $brand-dark-light, $alpha: 0.9);
+  inset: 0;
 
   &__close {
     z-index: 1;

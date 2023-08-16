@@ -36,7 +36,7 @@ export const FollowedList = () => {
     () => [
       {
         header: 'Account',
-        accessorKey: 'name',
+        accessorKey: 'lastName',
         cell: (info) => (
           <div className="flex align-center">
             <img className="push-sm-right" src={info.row.original.avatar} alt="avatar" width={48} height={48} />
@@ -143,24 +143,27 @@ export const FollowedList = () => {
               </tr>
             ))}
           </thead>
-          <tbody>
-            {table
-              .getRowModel()
-              .rows.slice(0, traderList.length)
-              .map((row) => {
-                return (
-                  <tr key={row.id} className="table__row">
-                    {row.getVisibleCells().map((cell) => {
-                      return (
-                        <td key={cell.id} className="table-cell">
-                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                        </td>
-                      );
-                    })}
-                  </tr>
-                );
-              })}
-          </tbody>
+            <tbody>
+              {table
+                .getRowModel()
+                .rows.slice(0, traderList.length)
+                .map((row) => {
+                  return (
+                    <tr 
+                    key={row.id} 
+                    className="table__row" 
+                    >
+                      {row.getVisibleCells().map((cell) => {
+                        return (
+                          <td key={cell.id} className="table-cell">
+                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  );
+                })}
+            </tbody>
         </table>
       </div>
       {!!selectedTrader && <UnfollowModal show onClose={() => setSelectedTrader(null)} {...selectedTrader} />}

@@ -22,10 +22,11 @@
 .brand-text-small {
   color: rgba($color: $color-text, $alpha: 0.5);
   font-size: $font-size-xsmall;
+}
 
-  &--light {
-    color: $color-text;
-  }
+.brand-text-small--light {
+  font-size: $font-size-xsmall;
+  color: $color-text;
 }
 
 .brand-primary-text {

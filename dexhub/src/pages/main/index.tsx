@@ -21,6 +21,7 @@ export const Main = (props: MainProps) => {
   const [showCreateAccButton, setShowCreateAccButton] = useState<boolean>(true);
   const [traderAddress, setTraderAddress] = useState<string>("");
   const [traderList, setTraderList] = useState<Trader[]>([]);
+  const [sortBy, setSortBy] = useState<string>("realisedPnl");
 
   const handleTraderChange = (_trader: Trader) => {
     props.setTrader(_trader);
@@ -28,13 +29,13 @@ export const Main = (props: MainProps) => {
 
   useEffect(() => {
     const getList = async () => {
-      const list: Trader[] = await utils.getTraderList(address);
+      const list: Trader[] = await utils.getTraderList(address, sortBy);
       if (list.length > 0) {
         setTraderList(list);
       }
     }
     getList();
-  }, []);
+  }, [sortBy, address]);
 
   useEffect(() => {
     const userHasAccount = async () => {
@@ -44,7 +45,7 @@ export const Main = (props: MainProps) => {
     }
     database.initDataBase();
     userHasAccount();
-  }, [])
+  }, [address])
 
   const handleInputChange = (event: any) => {
     setTraderAddress(event.target.value);
@@ -77,8 +78,8 @@ export const Main = (props: MainProps) => {
           </button>
         </div>
         <div className="main-page-actions__sort">
-          <SortButton>PnL-$</SortButton>
-          <SortButton>Size</SortButton>
+          <SortButton onClick={() => { setSortBy("realisedPnl") }}>PnL-$</SortButton>
+          <SortButton onClick={() => { setSortBy("sizeDelta") }}>Size</SortButton>
           <Period />
         </div>
       </div>

@@ -13,4 +13,13 @@
     align-items: flex-start;
     width: 100%;
   }
+
+  &-account {
+    position: relative;
+  }
+
+  &__link {
+    position: absolute;
+    inset: 0;
+  }
 }

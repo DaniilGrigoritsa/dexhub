@@ -13,9 +13,17 @@ export const FollowModal = ({ show, onClose }: Props) => (
       Auto-following tracking of the trader <br /> has begun.
     </span>
     <div className="full-width">
-      <button className="btn btn--full-width btn--primary btn--small-padding">Ok</button>
+      <button 
+        className="btn btn--full-width btn--primary btn--small-padding"
+        onClick={onClose}
+      >
+        Ok
+      </button>
       <div className="push-xs-bottom" />
-      <button className="btn btn--full-width btn--small-padding color-text" onClick={onClose}>
+      <button 
+        className="btn btn--full-width btn--small-padding color-text" 
+        onClick={onClose}
+      >
         Start new following
       </button>
     </div>

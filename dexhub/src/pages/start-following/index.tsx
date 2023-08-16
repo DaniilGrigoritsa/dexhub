@@ -77,7 +77,7 @@ export const StartFollowing = (trader: Trader) => {
           </div>
           <button 
             className="btn btn--primary full-width push-md-top" 
-            onClick={async () => { setTrue; await handleApprove() }}
+            onClick={async () => { setTrue(); await handleApprove() }}
           >
             Start following
           </button>

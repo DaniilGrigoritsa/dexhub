@@ -11,9 +11,20 @@ export type Trader = {
   status: 'followed' | 'unfollowed';
 };
 
+export type TraderHistory = {
+  date: string;
+  entry: number;
+  size: number;
+  pnl: number;
+  indexToken: string;
+  long: boolean;
+  status: 'done' | 'canceled' | 'waiting';
+};
+
 export type Stats = {
   win: number;
   loss: number;
+  totalPnl: number;
 }
 
 export type Trade = {

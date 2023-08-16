@@ -8,6 +8,7 @@ import classNames from 'classnames';
 import { Link, generatePath } from 'react-router-dom';
 import { useBoolean } from 'usehooks-ts';
 import { useAccount } from 'wagmi';
+import { AccountInfo } from '#src/components/account-info';
 
 import utils from '#src/scripts/utils';
 
@@ -16,20 +17,23 @@ type CardProps = PropsWithChildren<{ trader: Trader; handleTraderChange: (trader
 export const Card = (props: CardProps) => {
   const { value, setFalse, setTrue } = useBoolean(false);
   
-  const { avatar, name, lastName, pnl, win, loss, size, leverage, status } = props.trader;
+  const { avatar, name, lastName, pnl, win, loss, status } = props.trader;
 
   const { address } = useAccount();
 
   return (
     <div className="trader-card">
       <div className="trader-card-section">
-        <div className="flex">
-          <img className="push-sm-right" src={avatar} alt="avatar" />
-          <div>
-            <span className="brand-text-small brand-text-small--light">{lastName}</span>
-            <br />
-            <span className="brand-primary-text">{lastName}</span>
-          </div>
+      <div className="trader-card-account">
+          <Link
+            className="trader-card__link"
+            to={generatePath(ROUTES.main.traderHistory.path, {
+              id: name + lastName,
+            })}
+            onClick={() => props.handleTraderChange(props.trader) }
+          >
+            <AccountInfo name={lastName} lastName={lastName} avatar={avatar} />
+          </Link>
         </div>
         <div className="flex align-end direction-column">
           <span className="brand-text-small">PnL-$</span>
@@ -45,9 +49,13 @@ export const Card = (props: CardProps) => {
           </span>
         </div>
         <div className="flex align-center direction-column">
-          <span className="brand-text-small">Size</span>
-          <span className="border-bottom">{size.toLocaleString('ru')}</span>
-          <span>{leverage}x</span>
+          {
+            /*
+            <span className="brand-text-small">Size</span>
+            <span className="border-bottom">{size.toLocaleString('ru')}</span>
+            <span>{leverage}x</span>
+            */
+          }
         </div>
       </div>
       {status === 'followed' ? (
@@ -61,7 +69,7 @@ export const Card = (props: CardProps) => {
       ) : (
         <button 
           className={classNames('btn', 'btn--full-width', 'btn--secondary-red')} 
-          onClick={() => { utils.removeTrader(name, address); setTrue }}
+          onClick={() => { utils.removeTrader(name, address); setTrue() }}
         >
           Unfollow
         </button>

@@ -8,13 +8,15 @@ import { AbiItem } from 'web3-utils';
 import { zeroAddress } from "viem";
 import database from "./database";
 import { AxiosResponse } from "axios";
-import { Trader } from "#src/types";
-import { Stats } from '#src/types';
-// import { Trade } from "#src/types";
+import { Trader, Stats, TraderHistory } from "#src/types";
 import Avatar from '#src/assets/images/avatar.png';
 
 const web3: Web3 = new Web3(window.ethereum);
 window.ethereum.enable();
+
+const adjustNumber = (number: number | string): number => {
+    return Number((new BigNumber(number).div(BigNumber(10).pow(BigNumber(30)))).toFixed(0));
+}
 
 const getUserAccount = async (user: string | undefined) => {
     const chainId = web3.utils.hexToNumber(window.ethereum.chainId);
@@ -83,16 +85,19 @@ const getWinLossCount = async (trader: string): Promise<Stats> => {
     const response: AxiosResponse<any, any> = await axios.post(url, { query: query });
     const trades = response.data.data.trades;
 
-    let winCount = 0;
-    let lossCount = 0;
+    let winCount: number = 0;
+    let lossCount: number = 0;
+    let totalPnlCount: number = 0;
 
     trades.map((trade: any) => {
         Number(trade.realisedPnl) > 0 ? winCount += 1 : lossCount += 1;
+        totalPnlCount += adjustNumber(trade.realisedPnl);
     })
 
     const stats = {
         win: winCount,
-        loss: lossCount
+        loss: lossCount,
+        totalPnl: totalPnlCount
     }
 
     return stats;
@@ -107,14 +112,14 @@ const isTraderFollowed = async (trader: string, wallet: string | undefined): Pro
     return users[0].includes(wallet);
 }
 
-const getTraderList = async (wallet: string | undefined): Promise<Trader[]> => {
+const getTraderList = async (wallet: string | undefined, sortBy: string): Promise<Trader[]> => {
     const quantity: number = 100;
     const traderList: Trader[] = [];
     const chainId = web3.utils.hexToNumber(window.ethereum.chainId);
     const url: string = networks[chainId].graphUrl;
     const query: string = `
     {
-        trades(first: ${quantity}, orderBy: realisedPnl, orderDirection: desc) {
+        trades(first: ${quantity}, orderBy: ${sortBy}, orderDirection: desc) {
           account
           realisedPnl
           sizeDelta
@@ -128,6 +133,7 @@ const getTraderList = async (wallet: string | undefined): Promise<Trader[]> => {
     const tradersAddr: string[] = [];
     const traders = [];
     let count = 0;
+
     while (traders.length < 10) {
         if (!tradersAddr.includes(trades[count].account)) {
             traders.push(trades[count]);
@@ -136,95 +142,93 @@ const getTraderList = async (wallet: string | undefined): Promise<Trader[]> => {
         count += 1;
     }
 
-    for (let trade of traders) {
-        const stats: Stats = await getWinLossCount(trade.account);
-        const followed: boolean = await isTraderFollowed(trade.account, wallet);
-        const name = trade.account;
-        const pnl = Number(BigNumber(trade.realisedPnl).div(BigNumber(10).pow(BigNumber(30))));
-        const size = Number(BigNumber(trade.sizeDelta).div(BigNumber(10).pow(BigNumber(30))));
-        
+    for(let trader of tradersAddr) {
+        const stats: Stats = await getWinLossCount(trader);
+        const followed: boolean = await isTraderFollowed(trader, wallet);
+
+        traderList.push({
+            avatar: Avatar,
+            name: trader,
+            lastName: trader.substring(0, 5),
+            win: stats.win,
+            loss: stats.loss,
+            pnl: Number(stats.totalPnl.toFixed(0)),
+            size: 0,
+            approve: approve,
+            leverage: 0,
+            status: !followed ? "followed" : "unfollowed"
+        });
+
+    }
+
+    return traderList;
+}
+
+const getFollowedTraderInfo = async (traders: string[], wallet: string | undefined): Promise<Trader[]> => {
+    const traderList: Trader[] = [];
+    const approve = await getAllowance(wallet);
+    for(let trader of traders) {
+        const name = trader;
+        const stats: Stats = await getWinLossCount(name);
+
         traderList.push({
             avatar: Avatar,
             name: name,
             lastName: name.substring(0, 5),
             win: stats.win,
             loss: stats.loss,
-            pnl: Number(pnl.toFixed(0)),
-            size: Number(size.toFixed(0)),
+            pnl: Number(stats.totalPnl.toFixed(0)),
+            size: 0,
             approve: approve,
-            leverage: Number((trade.sizeDelta / trade.collateralDelta).toFixed(0)),
-            status: !followed ? "followed" : "unfollowed"
+            leverage: 0,
+            status: "unfollowed"
         });
     }
-    
     return traderList;
 }
 
-const getFollowedTraderInfo = async (traders: string[], wallet: string | undefined): Promise<Trader[]> => {
-    const traderList: Trader[] = [];
+const getTradersTradesHistory = async (trader: string): Promise<any[]> => {
+    const traderHistory: TraderHistory[] = [];
     const chainId = web3.utils.hexToNumber(window.ethereum.chainId);
     const url: string = networks[chainId].graphUrl;
-    const approve = await getAllowance(wallet);
-    for(let trader of traders) {
-        const query = `
-        {
-            trades(where: {account: "${trader}"}) {
-              account
-              collateral
-              sizeDelta
-              realisedPnl
-            }
+    const query: string = `
+    {
+        trades(where: {account: "${trader}"}) {
+          indexToken
+          realisedPnl
+          sizeDelta
+          collateralDelta
+          status
+          timestamp
+          isLong
         }
-        `
-        const response: AxiosResponse<any, any> = await axios.post(url, { query: query });
-        const trades = response.data.data.trades;
+    }`;
+    const response: AxiosResponse<any, any> = await axios.post(url, { query: query });
+    const trades = response.data.data.trades;
 
-        if (trades.length > 0) {
-            for(let trade of trades) {
-                const stats: Stats = await getWinLossCount(trade.account);
-                const name = trade.account;
-                const pnl = Number(BigNumber(trade.realisedPnl).div(BigNumber(10).pow(BigNumber(30))));
-                const size = Number(BigNumber(trade.sizeDelta).div(BigNumber(10).pow(BigNumber(30))));
-
-                traderList.push({
-                    avatar: Avatar,
-                    name: name,
-                    lastName: name.substring(0, 5),
-                    win: stats.win,
-                    loss: stats.loss,
-                    pnl: Number(pnl.toFixed(0)),
-                    size: Number(size.toFixed(0)),
-                    approve: approve,
-                    leverage: Number((trade.sizeDelta / trade.collateral).toFixed(0)),
-                    status: "unfollowed"
-                });
-            }
-        }
-        else {
-            traderList.push({
-                avatar: Avatar,
-                name: trader,
-                lastName: trader.substring(0, 5),
-                win: 0,
-                loss: 0,
-                pnl: 0,
-                size: 0,
-                approve: approve,
-                leverage: 0,
-                status: "unfollowed"
-            });
-        }
-        
+    for(let trade of trades) {
+        traderHistory.push({
+            date: trade.timestamp,
+            entry: adjustNumber(trade.collateralDelta),
+            size: adjustNumber(trade.sizeDelta),
+            pnl: adjustNumber(trade.realisedPnl),
+            indexToken: trade.indexToken,
+            long: trade.isLong,
+            status: trade.status == 'opened' ? 'done' : 'waiting'
+        })
     }
-    return traderList;
+
+    return trades;
 }
 
 export default { 
+    adjustNumber,
     getUserAccount, 
     addTrader, 
     removeTrader,
     getTraderList,
     getAllowance,
     getFollowedTraders,
-    getFollowedTraderInfo
+    getFollowedTraderInfo,
+    getTradersTradesHistory
 }

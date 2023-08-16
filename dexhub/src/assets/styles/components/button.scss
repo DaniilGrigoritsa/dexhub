@@ -65,4 +65,24 @@
   &--nowrap {
     white-space: nowrap;
   }
+
+  &-status {
+    padding: 8px 10px;
+    border-radius: 11px;
+    color: $white;
+    font-weight: $font-weight-bold;
+    font-size: $font-size-xsmall;
+    background-color: #4d4d4d;
+
+    &:hover {
+      opacity: 0.9;
+    }
+
+    &--cancel {
+      background-color: #e11059;
+    }
+    &--done {
+      background-color: #19c549;
+    }
+  }
 }
