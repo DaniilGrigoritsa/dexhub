@@ -109,12 +109,17 @@ export const FollowedList = () => {
 
   return (
     <Layout>
-      {/* <h1 className="brand-headline">No followed trader 😔 </h1>
-      <span className="brand-description">Select a trader for auto follow on the main page</span> */}
+      {traderList.length == 0 ? 
+      <>
+        <h1 className="brand-headline">No followed trader 😔 </h1>
+        <span className="brand-description">Select a trader for auto follow on the main page</span>
+      </>
+      : 
       <div className="flex justify-space-between align-center push-2xl-bottom">
         <h1 className="brand-headline">Followed list</h1>
         <Period />
       </div>
+      }
       <div>
         <table className="table">
           <thead>
@@ -167,6 +172,6 @@ export const FollowedList = () => {
         </table>
       </div>
       {!!selectedTrader && <UnfollowModal show onClose={() => setSelectedTrader(null)} {...selectedTrader} />}
-    </Layout>
+      </Layout>
   );
 };
