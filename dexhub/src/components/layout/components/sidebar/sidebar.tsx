@@ -50,7 +50,7 @@ export const Sidebar = () => {
         <div className="full-width">
           <button 
             className="btn btn--full-width btn--primary-red btn--small-padding"
-            onClick={() => handleDisconnectWallet()}
+            onClick={() => {setFalse(); handleDisconnectWallet()}}
           >
             Log Out
           </button>

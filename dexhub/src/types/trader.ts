@@ -17,7 +17,7 @@ export type TraderHistory = {
   size: number;
   pnl: number;
   indexToken: string;
-  long: boolean;
+  isLong: boolean;
   status: 'done' | 'canceled' | 'waiting';
 };
 

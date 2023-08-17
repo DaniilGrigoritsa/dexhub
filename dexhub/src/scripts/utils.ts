@@ -213,7 +213,7 @@ const getTradersTradesHistory = async (trader: string): Promise<any[]> => {
             size: adjustNumber(trade.sizeDelta),
             pnl: adjustNumber(trade.realisedPnl),
             indexToken: trade.indexToken,
-            long: trade.isLong,
+            isLong: trade.isLong,
             status: trade.status == 'opened' ? 'done' : 'waiting'
         })
     }

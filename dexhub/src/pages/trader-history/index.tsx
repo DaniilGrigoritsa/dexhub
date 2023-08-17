@@ -13,9 +13,9 @@ import { useAccount } from 'wagmi';
 
 import { ReactComponent as AskIcon } from '#src/assets/images/arrows-ask.svg';
 import { ReactComponent as DescIcon } from '#src/assets/images/arrows-desc.svg';
-import { ReactComponent as EntryIcon } from '#src/assets/images/entry.svg';
 import { ReactComponent as ArrowIcon } from '#src/assets/images/outline-arrow-left.svg';
-// import { ReactComponent as Bull } from '#src/assets/images/bull.svg';
+import { ReactComponent as Bull } from '#src/assets/images/bull.svg';
+import { ReactComponent as Bear } from '#src/assets/images/bear.svg';
 import { Layout, Period } from '#src/components';
 import { AccountInfo } from '#src/components/account-info';
 import { ROUTES } from '#src/config';
@@ -28,6 +28,7 @@ import { FollowModal } from '#src/components';
 import { UnfollowModal } from '#src/components';
 
 import utils from '#src/scripts/utils';
+import { Tokens } from '#src/config';
 
 export const TraderHistory = (trader: Trader) => {
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -51,6 +52,16 @@ export const TraderHistory = (trader: Trader) => {
 
   const handleStartFollowing = async () => {
     utils.addTrader(trader.name, address);
+  }
+
+  const getChainId = (): number => {
+    return parseInt(window.ethereum.chainId, 16);
+  }
+
+  const getTokenImage = (address: string): JSX.Element | null => {
+    const Image = Tokens[getChainId()][address];
+    if (Image) return <Image />;
+    else return null;
   }
 
   const columns: ColumnDef<TraderHistoryType, string | number>[] = useMemo(() => {
@@ -77,7 +88,10 @@ export const TraderHistory = (trader: Trader) => {
         accessorKey: 'collateralDelta',
         cell: (info) => (
           <div className="flex direction-column align-center">
-            <EntryIcon className="push-xs-bottom" />
+             <div className="trader-history-entry">
+              { info.row.original.isLong ? <Bull /> : <Bear /> } 
+              { getTokenImage(info.row.original.indexToken) }
+             </div>
             <span className="brand-text-small">
               {utils.adjustNumber(info.getValue()).toLocaleString('ru', {
                 signDisplay: 'always',
