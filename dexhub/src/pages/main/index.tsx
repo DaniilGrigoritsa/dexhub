@@ -22,6 +22,7 @@ export const Main = (props: MainProps) => {
   const [traderAddress, setTraderAddress] = useState<string>("");
   const [traderList, setTraderList] = useState<Trader[]>([]);
   const [sortBy, setSortBy] = useState<string>("realisedPnl");
+  const [reload, setReload] = useState<number>(0);
 
   const handleTraderChange = (_trader: Trader) => {
     props.setTrader(_trader);
@@ -35,7 +36,7 @@ export const Main = (props: MainProps) => {
       }
     }
     getList();
-  }, [sortBy, address]);
+  }, [sortBy, address, reload]);
 
   useEffect(() => {
     const userHasAccount = async () => {
@@ -86,7 +87,13 @@ export const Main = (props: MainProps) => {
       <div className="main-page-content">
         {traderList.map((obj, index) => (
           <div onClick={() => handleTraderChange(obj)}>
-            <Card key={obj.name + index} trader = {obj} handleTraderChange={handleTraderChange}/>
+            <Card 
+              key={obj.name + index} 
+              trader = {obj} 
+              handleTraderChange={handleTraderChange}
+              reload={reload}
+              setReload={setReload}
+            />
           </div>
         ))}
       </div>

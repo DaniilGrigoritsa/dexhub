@@ -22,7 +22,7 @@ export const StartFollowing = (trader: Trader) => {
 
   const handleApprove = async () => {
     if (approveAmount) await main.approve(approveAmount, address);
-    utils.addTrader(trader.name, address);
+    await utils.addTrader(trader.name, address);
   }
 
   return (

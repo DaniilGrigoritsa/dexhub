@@ -20,17 +20,21 @@ export const FollowedList = () => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [selectedTrader, setSelectedTrader] = useState<Trader | null>(null);
   const [traderList, setTraderList] = useState<Trader[]>([]);
+  const [reload, setReload] = useState<number>(0);
+
+  console.log("Followd list reload: ", reload)
 
   const { address } = useAccount();
 
   useEffect(() => {
     const getList = async () => {
       const list: string[] = await utils.getFollowedTraders(address);
+      console.log("Followed traders: ", list)
       const response: Trader[] = await utils.getFollowedTraderInfo(list, address);
       setTraderList(response);
     }
     getList();
-  }, []);
+  }, [reload]);
 
   const getColumns: ColumnDef<Trader, string | number>[] = useMemo(
     () => [
@@ -171,7 +175,7 @@ export const FollowedList = () => {
             </tbody>
         </table>
       </div>
-      {!!selectedTrader && <UnfollowModal show onClose={() => setSelectedTrader(null)} {...selectedTrader} />}
+      {!!selectedTrader && <UnfollowModal show onClose={() => setSelectedTrader(null)} trader={selectedTrader} reload={reload} setReload={setReload} />}
       </Layout>
   );
 };

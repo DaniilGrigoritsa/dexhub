@@ -33,6 +33,8 @@ import { Tokens } from '#src/config';
 export const TraderHistory = (trader: Trader) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [traderHistory, setTraderHistory] = useState<TraderHistoryType[]>([]);
+  const [reload, setReload] = useState<number>(0);
+  const [followed, setFollowed] = useState<'followed' | 'unfollowed' | null>(null);
 
   const { value, setFalse, setTrue } = useBoolean(false);
 
@@ -41,17 +43,19 @@ export const TraderHistory = (trader: Trader) => {
   useEffect(() => {
     const getHistory = async () => {
       const history = await utils.getTradersTradesHistory(trader.name);
+      const isFollowed: Trader[] = await utils.getFollowedTraderInfo([trader.name], address);
+      setFollowed(isFollowed[0].status);
       setTraderHistory(history);
     }
     getHistory();
-  }, [value]);
+  }, [reload]);
 
   const handleUnfollow = async () => {
-    utils.removeTrader(trader.name, address);
+    await utils.removeTrader(trader.name, address);
   }
 
   const handleStartFollowing = async () => {
-    utils.addTrader(trader.name, address);
+    await utils.addTrader(trader.name, address);
   }
 
   const getChainId = (): number => {
@@ -160,7 +164,7 @@ export const TraderHistory = (trader: Trader) => {
             <ArrowIcon width={24} height={24} />
           </Link>
           <AccountInfo name={trader.lastName} lastName={trader.lastName} avatar={trader.avatar} />
-          {trader.status === 'unfollowed' ? (
+          {followed === 'unfollowed' ? (
             <button 
               className={classNames('btn', 'btn--secondary-red')}
               onClick={() => { setTrue(); handleUnfollow() }}
@@ -228,7 +232,7 @@ export const TraderHistory = (trader: Trader) => {
       </div>
       {
         trader.status === 'unfollowed' ? 
-        <UnfollowModal show={value} onClose={setFalse} {...trader} /> : 
+        <UnfollowModal show={value} onClose={setFalse} trader={trader} reload={reload} setReload={setReload}/> : 
         <FollowModal show={value} onClose={setFalse} />
       }
     </Layout>

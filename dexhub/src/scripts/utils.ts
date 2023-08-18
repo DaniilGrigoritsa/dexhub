@@ -30,7 +30,7 @@ const getUserAccount = async (user: string | undefined) => {
     else return zeroAddress;
 }
 
-const addTrader = (trader: string, wallet: string | undefined) => {
+const addTrader = async (trader: string, wallet: string | undefined) => {
     let chain: string = "";
     const chainId = web3.utils.hexToNumber(window.ethereum.chainId);
     if (chainId == "42161") chain = "arbitrum";
@@ -38,15 +38,15 @@ const addTrader = (trader: string, wallet: string | undefined) => {
     if (!/^[a-fA-F0-9x]+$/.test(trader) || trader.length != 42) {
       console.log("Invalid trader address");
     }
-    else database.addTrackedTraders(wallet, [trader], chain);
+    else await database.addTrackedTraders(wallet, [trader], chain);
 }
 
-const removeTrader = (trader: string, wallet: string | undefined) => {
+const removeTrader = async (trader: string, wallet: string | undefined) => {
     let chain: string = "";
     const chainId = web3.utils.hexToNumber(window.ethereum.chainId);
     if (chainId == "42161") chain = "arbitrum";
     else if (chainId == "43114") chain = "avalanche";
-    database.deleteTrackedTraders(wallet, [trader], chain);
+    await database.deleteTrackedTraders(wallet, [trader], chain);
 }
 
 const getFollowedTraders = async (wallet: string | undefined): Promise<string[]> => {
@@ -170,6 +170,7 @@ const getFollowedTraderInfo = async (traders: string[], wallet: string | undefin
     for(let trader of traders) {
         const name = trader;
         const stats: Stats = await getWinLossCount(name);
+        const followed: boolean = await isTraderFollowed(trader, wallet);
 
         traderList.push({
             avatar: Avatar,
@@ -181,7 +182,7 @@ const getFollowedTraderInfo = async (traders: string[], wallet: string | undefin
             size: 0,
             approve: approve,
             leverage: 0,
-            status: "unfollowed"
+            status: !followed ? "followed" : "unfollowed"
         });
     }
     return traderList;

@@ -12,7 +12,12 @@ import { AccountInfo } from '#src/components/account-info';
 
 import utils from '#src/scripts/utils';
 
-type CardProps = PropsWithChildren<{ trader: Trader; handleTraderChange: (trader: Trader) => void }>;
+type CardProps = PropsWithChildren<{ 
+  trader: Trader; 
+  handleTraderChange: (trader: Trader) => void; 
+  reload: number; 
+  setReload: (reload: number) => void;
+}>;
 
 export const Card = (props: CardProps) => {
   const { value, setFalse, setTrue } = useBoolean(false);
@@ -74,7 +79,7 @@ export const Card = (props: CardProps) => {
           Unfollow
         </button>
       )}
-      <UnfollowModal show={value} onClose={setFalse} {...props.trader} />
+      <UnfollowModal show={value} onClose={setFalse} trader={props.trader} reload={props.reload} setReload={props.setReload}/>
     </div>
   );
 };
