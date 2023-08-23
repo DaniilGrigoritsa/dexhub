@@ -118,7 +118,7 @@ const getTimestamp = (period: PeriodValues): number => {
     let offset: number = 0;
     if (period == "day") offset = 60 * 60 * 24;
     else if (period == "week") offset = 60 * 60 * 24 * 7;
-    else if (period == "month") offset = 60 * 60 * 24 * 30;
+    else return 0;
     return Number(Number((currentTime / 1000).toFixed()) - offset);
 }
 
