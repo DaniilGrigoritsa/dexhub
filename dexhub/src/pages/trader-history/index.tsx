@@ -23,18 +23,20 @@ import { getPnlValue } from '#src/lib';
 import type { TraderHistory as TraderHistoryType } from '#src/types';
 import { Trader } from '#src/types';
 import { useBoolean } from 'usehooks-ts';
-
 import { FollowModal } from '#src/components';
 import { UnfollowModal } from '#src/components';
-
 import utils from '#src/scripts/utils';
 import { Tokens } from '#src/config';
+import { networks } from '#src/scripts/networks';
+import { PeriodValues } from '#src/components/period/types';
+
 
 export const TraderHistory = (trader: Trader) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [traderHistory, setTraderHistory] = useState<TraderHistoryType[]>([]);
   const [reload, setReload] = useState<number>(0);
   const [followed, setFollowed] = useState<'followed' | 'unfollowed' | null>(null);
+  const [period, setPeriod] = useState<PeriodValues>("month");
 
   const { value, setFalse, setTrue } = useBoolean(false);
 
@@ -42,13 +44,13 @@ export const TraderHistory = (trader: Trader) => {
 
   useEffect(() => {
     const getHistory = async () => {
-      const history = await utils.getTradersTradesHistory(trader.name);
+      const history = await utils.getTradersTradesHistory(trader.name, period);
       const isFollowed: Trader[] = await utils.getFollowedTraderInfo([trader.name], address);
       setFollowed(isFollowed[0].status);
       setTraderHistory(history);
     }
     getHistory();
-  }, [reload]);
+  }, [reload, period]);
 
   const handleUnfollow = async () => {
     await utils.removeTrader(trader.name, address);
@@ -66,6 +68,16 @@ export const TraderHistory = (trader: Trader) => {
     const Image = Tokens[getChainId()][address];
     if (Image) return <Image />;
     else return null;
+  }
+
+  const handleEtherscan = async () => {
+    const url = `${networks[getChainId()]["screner"]}${trader.name}`;
+    window.open(url);
+  }
+
+  const getLeverage = (sizedelta: number | string, collateralDelta: number): number => {
+    const divisor = utils.adjustNumber(sizedelta) / utils.adjustNumber(collateralDelta);
+    return Number(divisor.toFixed());
   }
 
   const columns: ColumnDef<TraderHistoryType, string | number>[] = useMemo(() => {
@@ -110,7 +122,7 @@ export const TraderHistory = (trader: Trader) => {
         cell: (info) => (
           <div className="flex align-center direction-column">
             <span className="border-bottom">{utils.adjustNumber(info.getValue()).toLocaleString('ru')}</span>
-            <span className="brand-text-small--light">8x</span>
+            <span className="brand-text-small--light">{getLeverage(info.getValue(), info.row.original.collateralDelta)}x</span>
           </div>
         ),
       },
@@ -121,26 +133,25 @@ export const TraderHistory = (trader: Trader) => {
       },
     ];
 
-    if (trader.status === 'followed') {
-      result.push({
-        header: 'Status',
-        accessorKey: 'status',
-        cell: (info) => {
-          const value = info.getValue();
+    result.push({
+      header: 'Status',
+      accessorKey: 'status',
+      cell: (info) => {
+        const value = info.getValue();
 
-          return (
-            <button
-              className={classNames('btn', 'btn-status', {
-                'btn-status--cancel': value === 'canceled',
-                'btn-status--done': value === 'done',
-              })}
-            >
-              {value}
-            </button>
-          );
-        },
-      });
-    }
+        return (
+          <button
+            className={classNames('btn', 'btn-status', {
+              'btn-status--cancel': value === 'canceled',
+              'btn-status--done': value === 'done',
+            })}
+            onClick={() => handleEtherscan()}
+          >
+            {value}
+          </button>
+        );
+      },
+    });
 
     return result;
   }, []);
@@ -180,7 +191,7 @@ export const TraderHistory = (trader: Trader) => {
             </button>
           )}
         </div>
-        <Period />
+        <Period value={period} onChange={setPeriod}/>
       </div>
       <div className="trader-history-table">
         <table className="table">

@@ -10,6 +10,7 @@ import database from "./database";
 import { AxiosResponse } from "axios";
 import { Trader, Stats, TraderHistory } from "#src/types";
 import Avatar from '#src/assets/images/avatar.png';
+import { PeriodValues } from "#src/components/period/types";
 
 const web3: Web3 = new Web3(window.ethereum);
 window.ethereum.enable();
@@ -112,14 +113,24 @@ const isTraderFollowed = async (trader: string, wallet: string | undefined): Pro
     return users[0].includes(wallet);
 }
 
-const getTraderList = async (wallet: string | undefined, sortBy: string): Promise<Trader[]> => {
+const getTimestamp = (period: PeriodValues): number => {
+    const currentTime: number = new Date().getTime();
+    let offset: number = 0;
+    if (period == "day") offset = 60 * 60 * 24;
+    else if (period == "week") offset = 60 * 60 * 24 * 7;
+    else if (period == "month") offset = 60 * 60 * 24 * 30;
+    return Number(Number((currentTime / 1000).toFixed()) - offset);
+}
+
+const getTraderList = async (wallet: string | undefined, sortBy: string, period: PeriodValues): Promise<Trader[]> => { 
     const quantity: number = 100;
     const traderList: Trader[] = [];
     const chainId = web3.utils.hexToNumber(window.ethereum.chainId);
     const url: string = networks[chainId].graphUrl;
+    const timestamp = getTimestamp(period);
     const query: string = `
     {
-        trades(first: ${quantity}, orderBy: ${sortBy}, orderDirection: desc) {
+        trades(where: {timestamp_gt: ${timestamp}}, first: ${quantity}, orderBy: ${sortBy}, orderDirection: desc) {
           account
           realisedPnl
           sizeDelta
@@ -129,12 +140,12 @@ const getTraderList = async (wallet: string | undefined, sortBy: string): Promis
     const response: AxiosResponse<any, any> = await axios.post(url, { query: query });
     const trades = response.data.data.trades;
     const approve = await getAllowance(wallet);
-    
+
     const tradersAddr: string[] = [];
     const traders = [];
     let count = 0;
 
-    while (traders.length < 10) {
+    while (traders.length < 10 && trades.length > 0) {
         if (!tradersAddr.includes(trades[count].account)) {
             traders.push(trades[count]);
             tradersAddr.push(trades[count].account)
@@ -188,13 +199,14 @@ const getFollowedTraderInfo = async (traders: string[], wallet: string | undefin
     return traderList;
 }
 
-const getTradersTradesHistory = async (trader: string): Promise<any[]> => {
+const getTradersTradesHistory = async (trader: string, period: PeriodValues): Promise<any[]> => {
     const traderHistory: TraderHistory[] = [];
     const chainId = web3.utils.hexToNumber(window.ethereum.chainId);
     const url: string = networks[chainId].graphUrl;
+    const timestamp = getTimestamp(period);
     const query: string = `
     {
-        trades(where: {account: "${trader}"}) {
+        trades(where: {timestamp_gt: ${timestamp}, account: "${trader}"}) {
           indexToken
           realisedPnl
           sizeDelta
@@ -210,7 +222,7 @@ const getTradersTradesHistory = async (trader: string): Promise<any[]> => {
     for(let trade of trades) {
         traderHistory.push({
             date: trade.timestamp,
-            entry: adjustNumber(trade.collateralDelta),
+            collateralDelta: adjustNumber(trade.collateralDelta),
             size: adjustNumber(trade.sizeDelta),
             pnl: adjustNumber(trade.realisedPnl),
             indexToken: trade.indexToken,

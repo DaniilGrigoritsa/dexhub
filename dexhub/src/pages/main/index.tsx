@@ -9,6 +9,7 @@ import utils from "#src/scripts/utils";
 import database from "#src/scripts/database";
 import { Trader } from '#src/types';
 import { PropsWithChildren } from 'react';
+import { PeriodValues } from '#src/components/period/types';
 
 type MainProps = PropsWithChildren<{ trader: Trader | null; setTrader: (trader: Trader) => void }>;
 
@@ -23,6 +24,7 @@ export const Main = (props: MainProps) => {
   const [traderList, setTraderList] = useState<Trader[]>([]);
   const [sortBy, setSortBy] = useState<string>("realisedPnl");
   const [reload, setReload] = useState<number>(0);
+  const [period, setPeriod] = useState<PeriodValues>("month");
 
   const handleTraderChange = (_trader: Trader) => {
     props.setTrader(_trader);
@@ -30,13 +32,13 @@ export const Main = (props: MainProps) => {
 
   useEffect(() => {
     const getList = async () => {
-      const list: Trader[] = await utils.getTraderList(address, sortBy);
+      const list: Trader[] = await utils.getTraderList(address, sortBy, period);
       if (list.length > 0) {
         setTraderList(list);
       }
     }
     getList();
-  }, [sortBy, address, reload]);
+  }, [sortBy, address, reload, period]);
 
   useEffect(() => {
     const userHasAccount = async () => {
@@ -81,7 +83,7 @@ export const Main = (props: MainProps) => {
         <div className="main-page-actions__sort">
           <SortButton onClick={() => { setSortBy("realisedPnl") }}>PnL-$</SortButton>
           <SortButton onClick={() => { setSortBy("sizeDelta") }}>Size</SortButton>
-          <Period />
+          <Period value={period} onChange={setPeriod}/>
         </div>
       </div>
       <div className="main-page-content">

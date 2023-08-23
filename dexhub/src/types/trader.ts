@@ -13,7 +13,7 @@ export type Trader = {
 
 export type TraderHistory = {
   date: string;
-  entry: number;
+  collateralDelta: number;
   size: number;
   pnl: number;
   indexToken: string;
