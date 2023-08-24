@@ -1,11 +1,12 @@
 import { PropsWithChildren, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useEventListener } from 'usehooks-ts';
+import classNames from 'classnames';
 import { ReactComponent as CloseIcon } from '#src/assets/images/close.svg';
 
-export type Props = PropsWithChildren<{ show: boolean; onClose: () => void }>;
+export type Props = PropsWithChildren<{ show: boolean; className?: string; onClose: () => void }>;
 
-export const Modal = ({ show, children, onClose }: Props) => {
+export const Modal = ({ show, className, children, onClose }: Props) => {
   const container = useMemo(() => document.createElement('div'), []);
 
   useEventListener('keydown', (event: KeyboardEvent) => {
@@ -39,7 +40,7 @@ export const Modal = ({ show, children, onClose }: Props) => {
           <button className="modal__close" onClick={onClose} />
           <div className="modal-body">
             <div className="modal-body__inner">
-              <div className="modal-content">
+              <div className={classNames('modal-content', className)}>
                 <button className="modal-content__close" onClick={onClose}>
                   <CloseIcon width={24} height={24} />
                 </button>
