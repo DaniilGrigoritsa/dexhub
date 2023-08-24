@@ -8,7 +8,6 @@ type Props = Omit<ModalProps, 'children'>;
 export const FollowModal = ({ show, onClose }: Props) => (
   <Modal show={show} onClose={onClose}>
     <CheckIcon width={56} height={56} color="#9D50FF" />
-    <span className="brand-subtitle">Unfollow this trader</span>
     <span className="brand-description">
       Auto-following tracking of the trader <br /> has begun.
     </span>

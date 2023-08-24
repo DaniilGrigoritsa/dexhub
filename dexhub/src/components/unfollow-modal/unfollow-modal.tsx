@@ -3,12 +3,9 @@ import { getPnlValue } from '#src/lib';
 import type { Trader } from '#src/types';
 import { useAccount } from 'wagmi';
 import { PropsWithChildren } from 'react';
-
-// import type { ModalProps } from '../modal';
 import { Modal } from '../modal';
 import utils from '#src/scripts/utils';
 
-// type PropsOmit = Omit<ModalProps, 'children'> & Trader;
 type Props = PropsWithChildren<{ show: boolean, onClose: () => void, trader: Trader, reload: number; setReload: (reload: number) => void }>;
 
 export const UnfollowModal = (props: Props) => {
