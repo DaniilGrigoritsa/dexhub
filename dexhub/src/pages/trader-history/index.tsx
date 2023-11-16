@@ -27,8 +27,8 @@ import { FollowModal } from '#src/components';
 import { UnfollowModal } from '#src/components';
 import utils from '#src/scripts/utils';
 import { Tokens } from '#src/config';
-import { networks } from '#src/scripts/networks';
 import { PeriodValues } from '#src/components/period/types';
+import { networks } from '#src/scripts/networks';
 
 
 export const TraderHistory = (trader: Trader) => {
@@ -70,14 +70,14 @@ export const TraderHistory = (trader: Trader) => {
     else return null;
   }
 
-  const handleEtherscan = async () => {
-    const url = `${networks[getChainId()]["screner"]}${trader.name}`;
-    window.open(url);
-  }
-
   const getLeverage = (sizedelta: number | string, collateralDelta: number): number => {
     const divisor = utils.adjustNumber(sizedelta) / utils.adjustNumber(collateralDelta);
     return Number(divisor.toFixed());
+  }
+
+  const handleEtherscan = async () => {
+    const url = `${networks[getChainId()]["screner"]}${trader.name}`;
+    window.open(url);
   }
 
   const columns: ColumnDef<TraderHistoryType, string | number>[] = useMemo(() => {
@@ -145,7 +145,6 @@ export const TraderHistory = (trader: Trader) => {
               'btn-status--cancel': value === 'canceled',
               'btn-status--done': value === 'done',
             })}
-            onClick={() => handleEtherscan()}
           >
             {value}
           </button>
@@ -174,7 +173,9 @@ export const TraderHistory = (trader: Trader) => {
           <Link className="btn" to={ROUTES.main.path}>
             <ArrowIcon width={24} height={24} />
           </Link>
-          <AccountInfo name={trader.lastName} lastName={trader.lastName} avatar={trader.avatar} />
+          <div onClick={() => handleEtherscan()}>
+            <AccountInfo name={trader.lastName} lastName={trader.lastName} avatar={trader.avatar}/>
+          </div>
           {followed === 'unfollowed' ? (
             <button 
               className={classNames('btn', 'btn--secondary-red')}

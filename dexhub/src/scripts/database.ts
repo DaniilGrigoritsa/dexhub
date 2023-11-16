@@ -1,18 +1,31 @@
+import dotenv from "dotenv";
 import { initializeApp } from "firebase/app";
 import { getDatabase } from "firebase/database";
 import { ref, set, get , child } from "firebase/database";
+import { type Database } from "firebase/database";
 
-let DB: any;
+
+dotenv.config({path:__dirname.concat('/./../../.env')});
+
+let DB: Database;
+const apiKey = process.env.apiKey || "";
+const authDomain = process.env.authDomain || "";
+const projectId = process.env.projectId || "";
+const storageBucket = process.env.storageBucket || "";
+const messagingSenderId = process.env.messagingSenderId || "";
+const appId = process.env.appId || "";
+const measurementId = process.env.measurementId || "";
+
 
 const initDataBase = () => {
     const firebaseConfig = {
-        apiKey: "AIzaSyAYRXa_KZXwamKnv2KplgLQY31PGGmQ0uM",
-        authDomain: "copy-trade-b3f80.firebaseapp.com",
-        projectId: "copy-trade-b3f80",
-        storageBucket: "copy-trade-b3f80.appspot.com",
-        messagingSenderId: "864095547052",
-        appId: "1:864095547052:web:3af05299e83e644750f909",
-        measurementId: "G-F8Z3K73GHM"
+        apiKey: apiKey,
+        authDomain: authDomain,
+        projectId: projectId,
+        storageBucket: storageBucket,
+        messagingSenderId: messagingSenderId,
+        appId: appId,
+        measurementId: measurementId
     };
     
     const app = initializeApp(firebaseConfig);
